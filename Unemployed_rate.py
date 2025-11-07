@@ -4,7 +4,7 @@ import requests, zipfile, io, pandas as pd
 table_id = "14100287"
 zip_url = f"https://www150.statcan.gc.ca/n1/tbl/csv/{table_id}-eng.zip"
 
-print("⬇️ Downloading direct CSV ZIP from StatCan...")
+print(" Downloading direct CSV ZIP from StatCan...")
 response = requests.get(zip_url)
 response.raise_for_status()
 
@@ -12,11 +12,11 @@ response.raise_for_status()
 with zipfile.ZipFile(io.BytesIO(response.content)) as z:
     csv_files = [name for name in z.namelist() if name.endswith(".csv")]
     csv_name = csv_files[0]
-    print(f"📄 Found CSV inside ZIP: {csv_name}")
+    print(f" Found CSV inside ZIP: {csv_name}")
     with z.open(csv_name) as f:
         df = pd.read_csv(f, low_memory=False)
 
-print("✅ Data loaded successfully!")
+print(" Data loaded successfully!")
 
 # Step 3: Filter for years 2020+
 df["Year"] = df["REF_DATE"].astype(str).str[:4].astype(int)
@@ -43,7 +43,7 @@ df = df[df["Labour force characteristics"].isin(desired_chars)]
 if "Data type" in df.columns:
     df = df[df["Data type"].str.contains("Seasonally adjusted", case=False, na=False)]
 else:
-    print("⚠️ Column 'Data type' not found; skipping seasonal adjustment filter.")
+    print(" Column 'Data type' not found; skipping seasonal adjustment filter.")
 
 # Step 7: Drop duplicates
 df = df.drop_duplicates(
@@ -73,8 +73,8 @@ df = df.rename(columns={
 output_path = "C:/Users/Masha/Documents/labour_market_2020_onward.csv"
 df.to_csv(output_path, index=False, encoding="utf-8-sig")
 
-print(f"💾 Saved filtered dataset to: {output_path}")
-print(f"✅ Final rows: {len(df)}")
+print(f" Saved filtered dataset to: {output_path}")
+print(f" Final rows: {len(df)}")
 print(df.head(10))
 
 # Step 10: Create pivoted version (for Power BI / Excel)
@@ -88,6 +88,6 @@ df_pivot = df.pivot_table(
 pivot_path = "C:/Users/Masha/Documents/labour_market_pivoted.csv"
 df_pivot.to_csv(pivot_path, index=False, encoding="utf-8-sig")
 
-print(f"💾 Saved pivoted dataset to: {pivot_path}")
-print(f"✅ Pivoted shape: {df_pivot.shape}")
+print(f" Saved pivoted dataset to: {pivot_path}")
+print(f" Pivoted shape: {df_pivot.shape}")
 print(df_pivot.head(10))
